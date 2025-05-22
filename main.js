@@ -324,8 +324,13 @@ class FSSCrawler {
         }
       }
 
-      // 데이터 정렬 (최신순)
-      allPosts.sort((a, b) => new Date(b.crawled_at) - new Date(a.crawled_at));
+      // 데이터 정렬 (최신순) - 게시글 ID 기준 (숫자가 클수록 최신)
+      allPosts.sort((a, b) => {
+        const idA = parseInt(a.id) || 0;
+        const idB = parseInt(b.id) || 0;
+        return idB - idA; // 내림차순 (큰 ID가 먼저)
+      });
+
       allFiles.sort((a, b) => new Date(b.found_at) - new Date(a.found_at));
 
       // 데이터 저장

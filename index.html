@@ -11,146 +11,153 @@
         box-sizing: border-box;
       }
       body {
-        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-        background: #f5f5f5;
-      }
-
-      .container {
-        max-width: 1200px;
-        margin: 0 auto;
-        padding: 20px;
-      }
-      .header {
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        color: white;
-        padding: 25px;
-        border-radius: 12px;
-        margin-bottom: 20px;
-        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-      }
-      .header h1 {
-        margin-bottom: 10px;
-        font-size: 24px;
-      }
-      .header .stats {
-        opacity: 0.9;
-        font-size: 14px;
+        font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+        background: #ffffff;
+        color: #1d1d1f;
         line-height: 1.5;
       }
 
-      .controls {
-        background: white;
-        padding: 15px;
-        border-radius: 8px;
-        margin-bottom: 20px;
-        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      .container {
+        max-width: 980px;
+        margin: 0 auto;
+        padding: 40px 20px;
       }
+
+      .header {
+        text-align: center;
+        margin-bottom: 48px;
+      }
+      .header h1 {
+        font-size: 48px;
+        font-weight: 600;
+        color: #1d1d1f;
+        margin-bottom: 8px;
+        letter-spacing: -0.03em;
+      }
+      .header .stats {
+        color: #86868b;
+        font-size: 19px;
+        font-weight: 400;
+      }
+
+      .controls {
+        margin-bottom: 32px;
+      }
+
       .search-box {
         width: 100%;
-        padding: 10px;
-        border: 1px solid #ddd;
-        border-radius: 4px;
-        margin-bottom: 10px;
+        padding: 16px 20px;
+        border: 1px solid #d2d2d7;
+        border-radius: 12px;
+        margin-bottom: 20px;
+        font-size: 17px;
+        background: #ffffff;
       }
+      .search-box:focus {
+        outline: none;
+        border-color: #007aff;
+      }
+
       .filter-buttons {
         display: flex;
-        gap: 10px;
-        flex-wrap: wrap;
+        gap: 12px;
+        justify-content: center;
       }
       .filter-btn {
-        padding: 8px 16px;
-        border: 1px solid #ddd;
-        background: white;
-        border-radius: 4px;
+        padding: 12px 24px;
+        border: 1px solid #d2d2d7;
+        background: #ffffff;
+        border-radius: 12px;
         cursor: pointer;
+        font-size: 17px;
+        font-weight: 400;
+        color: #1d1d1f;
       }
       .filter-btn.active {
-        background: #007bff;
+        background: #1d1d1f;
         color: white;
-        border-color: #007bff;
+        border-color: #1d1d1f;
       }
 
       .posts-container {
-        background: white;
-        border-radius: 8px;
-        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        border: 1px solid #d2d2d7;
+        border-radius: 12px;
         overflow: hidden;
       }
+
       .post-item {
-        border-bottom: 1px solid #eee;
-        padding: 15px;
+        border-bottom: 1px solid #d2d2d7;
+        padding: 24px;
+        background: #ffffff;
       }
       .post-item:last-child {
         border-bottom: none;
       }
       .post-item.new {
-        background: #f8f9ff;
-        border-left: 4px solid #007bff;
+        background: #f5f5f7;
       }
 
       .post-title {
-        font-size: 16px;
-        font-weight: 500;
+        font-size: 20px;
+        font-weight: 600;
         margin-bottom: 8px;
+        line-height: 1.3;
       }
       .post-title a {
-        color: #333;
+        color: #1d1d1f;
         text-decoration: none;
       }
       .post-title a:hover {
-        color: #007bff;
+        color: #007aff;
       }
 
       .post-meta {
-        display: flex;
-        gap: 15px;
-        font-size: 13px;
-        color: #666;
-        margin-bottom: 10px;
-      }
-      .post-files {
-        margin-top: 10px;
-      }
-      .file-item {
-        display: inline-block;
-        margin: 2px 5px 2px 0;
-      }
-      .file-link {
-        padding: 4px 8px;
-        background: #e3f2fd;
-        color: #1976d2;
-        text-decoration: none;
-        border-radius: 4px;
-        font-size: 12px;
-      }
-      .file-link:hover {
-        background: #bbdefb;
+        font-size: 15px;
+        color: #86868b;
+        margin-bottom: 16px;
       }
 
-      .loading {
-        text-align: center;
-        padding: 40px;
-        color: #666;
+      .post-files {
+        margin-top: 16px;
       }
+      .file-item {
+        display: block;
+        margin-bottom: 8px;
+      }
+      .file-link {
+        color: #007aff;
+        text-decoration: none;
+        font-size: 17px;
+        font-weight: 400;
+      }
+      .file-link:hover {
+        text-decoration: underline;
+      }
+
+      .loading,
       .error {
         text-align: center;
-        padding: 40px;
-        color: #d32f2f;
-        background: #ffebee;
-        margin: 20px 0;
-        border-radius: 8px;
+        padding: 48px;
+        font-size: 17px;
+        color: #86868b;
       }
 
       @media (max-width: 768px) {
         .container {
-          padding: 10px;
+          padding: 20px;
         }
-        .post-meta {
-          flex-direction: column;
-          gap: 5px;
+        .header h1 {
+          font-size: 32px;
+        }
+        .header .stats {
+          font-size: 17px;
         }
         .filter-buttons {
+          flex-wrap: wrap;
           justify-content: center;
+        }
+        .post-item {
+          padding: 20px;
         }
       }
     </style>
@@ -191,6 +198,30 @@
       let allPosts = [];
       let allFiles = [];
       let currentFilter = 'all';
+
+      // 유틸리티 함수들
+      function getFileIcon(fileName) {
+        const ext = fileName.split('.').pop().toLowerCase();
+        const icons = {
+          pdf: '📄',
+          hwp: '📝',
+          doc: '📝',
+          docx: '📝',
+          xls: '📊',
+          xlsx: '📊',
+          ppt: '📈',
+          pptx: '📈',
+          zip: '🗜️',
+          rar: '🗜️',
+          txt: '📃',
+        };
+        return icons[ext] || '📎';
+      }
+
+      function getFileType(fileName) {
+        const ext = fileName.split('.').pop().toLowerCase();
+        return ext.toUpperCase();
+      }
 
       async function loadData() {
         try {
@@ -253,7 +284,14 @@
         const searchTerm = document
           .getElementById('search')
           .value.toLowerCase();
-        const filteredPosts = filterPosts(allPosts, currentFilter, searchTerm);
+        let filteredPosts = filterPosts(allPosts, currentFilter, searchTerm);
+
+        // 최신순 정렬 (게시글 ID 기준)
+        filteredPosts.sort((a, b) => {
+          const idA = parseInt(a.id) || 0;
+          const idB = parseInt(b.id) || 0;
+          return idB - idA; // 큰 ID가 먼저 (최신순)
+        });
 
         if (filteredPosts.length === 0) {
           document.getElementById('posts-list').innerHTML =
@@ -298,26 +336,26 @@
                             <div class="post-files">
                                 📎 첨부파일 (${postFiles.length}개):
                                 ${postFiles
-                                  .map(
-                                    (file) => `
-                                    <span class="file-item">
-                                        <a href="${
-                                          file.file_url
-                                        }" class="file-link" target="_blank" title="다운로드: ${
+                                  .map((file) => {
+                                    const icon = getFileIcon(file.file_name);
+                                    const fileType = getFileType(
                                       file.file_name
-                                    }">
-                                            ${
-                                              file.file_name.length > 30
-                                                ? file.file_name.substring(
-                                                    0,
-                                                    30
-                                                  ) + '...'
-                                                : file.file_name
-                                            }
-                                        </a>
-                                    </span>
-                                `
-                                  )
+                                    );
+                                    const shortName =
+                                      file.file_name.length > 25
+                                        ? file.file_name.substring(0, 25) +
+                                          '...'
+                                        : file.file_name;
+
+                                    return `
+                                        <span class="file-item">
+                                            <a href="${file.file_url}" class="file-link" target="_blank"
+                                               title="[${fileType}] ${file.file_name}">
+                                                ${icon} ${shortName} <span class="file-type">[${fileType}]</span>
+                                            </a>
+                                        </span>
+                                    `;
+                                  })
                                   .join('')}
                             </div>
                         `
@@ -381,24 +419,28 @@
       }
 
       // 이벤트 리스너 설정
-      document.getElementById('search').addEventListener('input', displayPosts);
+      document.addEventListener('DOMContentLoaded', function () {
+        document
+          .getElementById('search')
+          .addEventListener('input', displayPosts);
 
-      document.querySelectorAll('.filter-btn').forEach((btn) => {
-        btn.addEventListener('click', (e) => {
-          document
-            .querySelectorAll('.filter-btn')
-            .forEach((b) => b.classList.remove('active'));
-          e.target.classList.add('active');
-          currentFilter = e.target.dataset.filter;
-          displayPosts();
+        document.querySelectorAll('.filter-btn').forEach((btn) => {
+          btn.addEventListener('click', (e) => {
+            document
+              .querySelectorAll('.filter-btn')
+              .forEach((b) => b.classList.remove('active'));
+            e.target.classList.add('active');
+            currentFilter = e.target.dataset.filter;
+            displayPosts();
+          });
         });
+
+        // 페이지 로드 시 데이터 불러오기
+        loadData();
+
+        // 5분마다 데이터 새로고침
+        setInterval(loadData, 5 * 60 * 1000);
       });
-
-      // 페이지 로드 시 데이터 불러오기
-      loadData();
-
-      // 5분마다 데이터 새로고침
-      setInterval(loadData, 5 * 60 * 1000);
     </script>
   </body>
 </html>
