@@ -5,169 +5,400 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>FSS 게시판 모니터</title>
     <style>
+      /* shadcn/ui 디자인 시스템 */
+      :root {
+        --background: 0 0% 100%;
+        --foreground: 222.2 84% 4.9%;
+        --card: 0 0% 100%;
+        --card-foreground: 222.2 84% 4.9%;
+        --popover: 0 0% 100%;
+        --popover-foreground: 222.2 84% 4.9%;
+        --primary: 221.2 83.2% 53.3%;
+        --primary-foreground: 210 40% 98%;
+        --secondary: 210 40% 96%;
+        --secondary-foreground: 222.2 84% 4.9%;
+        --muted: 210 40% 96%;
+        --muted-foreground: 215.4 16.3% 46.9%;
+        --accent: 210 40% 96%;
+        --accent-foreground: 222.2 84% 4.9%;
+        --destructive: 0 84.2% 60.2%;
+        --destructive-foreground: 210 40% 98%;
+        --border: 214.3 31.8% 91.4%;
+        --input: 214.3 31.8% 91.4%;
+        --ring: 221.2 83.2% 53.3%;
+        --radius: 0.5rem;
+      }
+
       * {
+        border-color: hsl(var(--border));
         margin: 0;
         padding: 0;
         box-sizing: border-box;
       }
+
       body {
-        font-family: -apple-system, BlinkMacSystemFont, sans-serif;
-        background: #ffffff;
-        color: #1d1d1f;
+        background-color: hsl(var(--background));
+        color: hsl(var(--foreground));
+        font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI',
+          Roboto, sans-serif;
+        font-feature-settings: 'cv02', 'cv03', 'cv04', 'cv11';
+        font-variation-settings: normal;
         line-height: 1.5;
+        -webkit-font-smoothing: antialiased;
       }
 
       .container {
-        max-width: 980px;
+        max-width: 1200px;
         margin: 0 auto;
-        padding: 40px 20px;
+        padding: 2rem 1rem;
       }
 
+      /* Header */
       .header {
-        text-align: center;
-        margin-bottom: 48px;
+        margin-bottom: 3rem;
       }
+
       .header h1 {
-        font-size: 48px;
-        font-weight: 600;
-        color: #1d1d1f;
-        margin-bottom: 8px;
-        letter-spacing: -0.03em;
+        font-size: 2.25rem;
+        font-weight: 800;
+        letter-spacing: -0.025em;
+        line-height: 1.2;
+        margin-bottom: 0.5rem;
+        background: linear-gradient(
+          to right,
+          hsl(var(--foreground)),
+          hsl(var(--muted-foreground))
+        );
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
       }
+
       .header .stats {
-        color: #86868b;
-        font-size: 19px;
-        font-weight: 400;
+        color: hsl(var(--muted-foreground));
+        font-size: 0.875rem;
+        margin-bottom: 1rem;
       }
 
+      /* Controls Card */
       .controls {
-        margin-bottom: 32px;
+        background-color: hsl(var(--card));
+        border: 1px solid hsl(var(--border));
+        border-radius: calc(var(--radius) + 2px);
+        padding: 1.5rem;
+        margin-bottom: 1.5rem;
+        box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1),
+          0 1px 2px -1px rgb(0 0 0 / 0.1);
       }
 
+      /* Search Input */
       .search-box {
         width: 100%;
-        padding: 16px 20px;
-        border: 1px solid #d2d2d7;
-        border-radius: 12px;
-        margin-bottom: 20px;
-        font-size: 17px;
-        background: #ffffff;
+        height: 2.5rem;
+        padding: 0.5rem 0.75rem;
+        font-size: 0.875rem;
+        border: 1px solid hsl(var(--input));
+        border-radius: var(--radius);
+        background-color: hsl(var(--background));
+        margin-bottom: 1rem;
+        transition: border-color 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
       }
+
+      .search-box::placeholder {
+        color: hsl(var(--muted-foreground));
+      }
+
       .search-box:focus {
         outline: none;
-        border-color: #007aff;
+        border-color: hsl(var(--ring));
+        box-shadow: 0 0 0 2px hsl(var(--ring) / 0.2);
       }
 
+      /* Filter Buttons */
       .filter-buttons {
         display: flex;
-        gap: 12px;
-        justify-content: center;
+        gap: 0.5rem;
+        flex-wrap: wrap;
       }
+
       .filter-btn {
-        padding: 12px 24px;
-        border: 1px solid #d2d2d7;
-        background: #ffffff;
-        border-radius: 12px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        white-space: nowrap;
+        border-radius: var(--radius);
+        font-size: 0.875rem;
+        font-weight: 500;
+        height: 2.25rem;
+        padding: 0.5rem 1rem;
+        border: 1px solid hsl(var(--input));
+        background-color: hsl(var(--background));
+        color: hsl(var(--foreground));
         cursor: pointer;
-        font-size: 17px;
-        font-weight: 400;
-        color: #1d1d1f;
+        transition: all 0.2s ease-in-out;
       }
+
+      .filter-btn:hover {
+        background-color: hsl(var(--accent));
+        color: hsl(var(--accent-foreground));
+      }
+
       .filter-btn.active {
-        background: #1d1d1f;
-        color: white;
-        border-color: #1d1d1f;
+        background-color: hsl(var(--primary));
+        color: hsl(var(--primary-foreground));
+        border-color: hsl(var(--primary));
       }
 
+      /* Posts Container */
       .posts-container {
-        border: 1px solid #d2d2d7;
-        border-radius: 12px;
+        background-color: hsl(var(--card));
+        border: 1px solid hsl(var(--border));
+        border-radius: calc(var(--radius) + 2px);
         overflow: hidden;
+        box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1),
+          0 1px 2px -1px rgb(0 0 0 / 0.1);
       }
 
+      /* Post Items */
       .post-item {
-        border-bottom: 1px solid #d2d2d7;
-        padding: 24px;
-        background: #ffffff;
+        border-bottom: 1px solid hsl(var(--border));
+        padding: 1.5rem;
+        transition: background-color 0.15s ease-in-out;
+        position: relative;
       }
+
       .post-item:last-child {
         border-bottom: none;
       }
-      .post-item.new {
-        background: #f5f5f7;
+
+      .post-item:hover {
+        background-color: hsl(var(--muted) / 0.5);
       }
 
-      .post-title {
-        font-size: 20px;
+      .post-item.new {
+        background-color: hsl(var(--primary) / 0.05);
+        border-left: 4px solid hsl(var(--primary));
+      }
+
+      .post-item.new::after {
+        content: 'New';
+        position: absolute;
+        top: 1rem;
+        right: 1rem;
+        background-color: hsl(var(--primary));
+        color: hsl(var(--primary-foreground));
+        padding: 0.125rem 0.5rem;
+        border-radius: calc(var(--radius) - 2px);
+        font-size: 0.75rem;
         font-weight: 600;
-        margin-bottom: 8px;
-        line-height: 1.3;
+        text-transform: uppercase;
+        letter-spacing: 0.025em;
       }
+
+      /* Typography */
+      .post-title {
+        font-size: 1.125rem;
+        font-weight: 600;
+        line-height: 1.4;
+        margin-bottom: 0.5rem;
+      }
+
       .post-title a {
-        color: #1d1d1f;
+        color: hsl(var(--foreground));
         text-decoration: none;
+        transition: color 0.2s ease-in-out;
       }
+
       .post-title a:hover {
-        color: #007aff;
+        color: hsl(var(--primary));
       }
 
       .post-meta {
-        font-size: 15px;
-        color: #86868b;
-        margin-bottom: 16px;
+        color: hsl(var(--muted-foreground));
+        font-size: 0.875rem;
+        margin-bottom: 1rem;
+        display: flex;
+        gap: 1rem;
+        flex-wrap: wrap;
       }
 
+      .post-meta span {
+        display: flex;
+        align-items: center;
+        gap: 0.25rem;
+      }
+
+      /* File Links */
       .post-files {
-        margin-top: 16px;
-      }
-      .file-item {
-        display: block;
-        margin-bottom: 8px;
-      }
-      .file-link {
-        color: #007aff;
-        text-decoration: none;
-        font-size: 17px;
-        font-weight: 400;
-      }
-      .file-link:hover {
-        text-decoration: underline;
+        margin-top: 1rem;
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
       }
 
+      .file-item {
+        display: flex;
+      }
+
+      .file-link {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.5rem 0.75rem;
+        background-color: hsl(var(--secondary));
+        color: hsl(var(--secondary-foreground));
+        text-decoration: none;
+        border-radius: var(--radius);
+        font-size: 0.875rem;
+        font-weight: 500;
+        transition: all 0.2s ease-in-out;
+        border: 1px solid hsl(var(--border));
+        width: fit-content;
+      }
+
+      .file-link:hover {
+        background-color: hsl(var(--accent));
+        color: hsl(var(--accent-foreground));
+        border-color: hsl(var(--ring));
+      }
+
+      .file-type {
+        background-color: hsl(var(--primary) / 0.1);
+        color: hsl(var(--primary));
+        padding: 0.125rem 0.375rem;
+        border-radius: calc(var(--radius) - 2px);
+        font-size: 0.75rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.025em;
+      }
+
+      /* Loading & Error States */
       .loading,
       .error {
+        padding: 3rem 1.5rem;
         text-align: center;
-        padding: 48px;
-        font-size: 17px;
-        color: #86868b;
+        color: hsl(var(--muted-foreground));
+        font-size: 0.875rem;
       }
 
+      .error {
+        color: hsl(var(--destructive));
+        background-color: hsl(var(--destructive) / 0.05);
+        border: 1px solid hsl(var(--destructive) / 0.2);
+        border-radius: var(--radius);
+        margin: 1rem;
+      }
+
+      /* Badge Component */
+      .badge {
+        display: inline-flex;
+        align-items: center;
+        border-radius: calc(var(--radius) - 2px);
+        padding: 0.125rem 0.625rem;
+        font-size: 0.75rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.025em;
+        transition: color 0.2s ease-in-out;
+      }
+
+      .badge-primary {
+        background-color: hsl(var(--primary));
+        color: hsl(var(--primary-foreground));
+      }
+
+      .badge-secondary {
+        background-color: hsl(var(--secondary));
+        color: hsl(var(--secondary-foreground));
+      }
+
+      /* Responsive Design */
       @media (max-width: 768px) {
         .container {
-          padding: 20px;
+          padding: 1rem;
         }
+
         .header h1 {
-          font-size: 32px;
+          font-size: 1.875rem;
         }
-        .header .stats {
-          font-size: 17px;
+
+        .controls {
+          padding: 1rem;
         }
-        .filter-buttons {
-          flex-wrap: wrap;
-          justify-content: center;
-        }
+
         .post-item {
-          padding: 20px;
+          padding: 1rem;
         }
+
+        .post-meta {
+          flex-direction: column;
+          gap: 0.5rem;
+        }
+
+        .filter-buttons {
+          gap: 0.375rem;
+        }
+
+        .filter-btn {
+          height: 2rem;
+          padding: 0.375rem 0.75rem;
+          font-size: 0.8125rem;
+        }
+      }
+
+      /* Focus Styles */
+      .filter-btn:focus-visible {
+        outline: 2px solid hsl(var(--ring));
+        outline-offset: 2px;
+      }
+
+      .file-link:focus-visible {
+        outline: 2px solid hsl(var(--ring));
+        outline-offset: 2px;
+      }
+
+      /* Animation */
+      @keyframes slide-in {
+        from {
+          opacity: 0;
+          transform: translateY(0.5rem);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      .post-item {
+        animation: slide-in 0.3s ease-out;
+      }
+
+      /* Scrollbar */
+      ::-webkit-scrollbar {
+        width: 0.5rem;
+      }
+
+      ::-webkit-scrollbar-track {
+        background: hsl(var(--muted));
+      }
+
+      ::-webkit-scrollbar-thumb {
+        background: hsl(var(--muted-foreground) / 0.3);
+        border-radius: 0.25rem;
+      }
+
+      ::-webkit-scrollbar-thumb:hover {
+        background: hsl(var(--muted-foreground) / 0.5);
       }
     </style>
   </head>
   <body>
     <div class="container">
       <div class="header">
-        <h1>🏛️ FSS 게시판 모니터</h1>
+        <h1>FSS 게시판 모니터</h1>
         <div class="stats">
-          <span id="total-posts">게시글 로딩 중...</span> |
+          <span id="total-posts">게시글 로딩 중...</span><br />
           <span id="last-update">업데이트 확인 중...</span>
         </div>
       </div>
@@ -177,7 +408,7 @@
           type="text"
           id="search"
           class="search-box"
-          placeholder="제목이나 내용에서 검색..."
+          placeholder="제목이나 내용에서 검색하세요..."
         />
         <div class="filter-buttons">
           <button class="filter-btn active" data-filter="all">전체</button>
@@ -199,7 +430,6 @@
       let allFiles = [];
       let currentFilter = 'all';
 
-      // 유틸리티 함수들
       function getFileIcon(fileName) {
         const ext = fileName.split('.').pop().toLowerCase();
         const icons = {
@@ -225,8 +455,6 @@
 
       async function loadData() {
         try {
-          console.log('데이터 로딩 시작...');
-
           const [postsResponse, filesResponse] = await Promise.all([
             fetch('data/posts.json').catch(() => ({ json: () => [] })),
             fetch('data/files.json').catch(() => ({ json: () => [] })),
@@ -235,17 +463,13 @@
           allPosts = await postsResponse.json();
           allFiles = await filesResponse.json();
 
-          console.log(
-            `로드된 게시글: ${allPosts.length}개, 파일: ${allFiles.length}개`
-          );
-
           updateStats();
           displayPosts();
 
           document.getElementById('loading').style.display = 'none';
         } catch (error) {
           console.error('데이터 로드 오류:', error);
-          showError(`데이터를 불러올 수 없습니다: ${error.message}`);
+          showError('데이터를 불러올 수 없습니다');
         }
       }
 
@@ -260,9 +484,8 @@
 
         document.getElementById(
           'total-posts'
-        ).textContent = `총 ${allPosts.length}개 게시글 (오늘 ${newPostsCount}개 신규) • 첨부파일 ${totalFiles}개`;
+        ).textContent = `총 ${allPosts.length.toLocaleString()}개 게시글 (오늘 ${newPostsCount}개 신규) • 첨부파일 ${totalFiles.toLocaleString()}개`;
 
-        // 최근 크롤링 시간 계산
         let lastCrawlTime = '처음 실행';
         if (allPosts.length > 0) {
           const latestPost = allPosts.reduce((latest, post) =>
@@ -286,55 +509,46 @@
           .value.toLowerCase();
         let filteredPosts = filterPosts(allPosts, currentFilter, searchTerm);
 
-        // 최신순 정렬 (게시글 ID 기준)
         filteredPosts.sort((a, b) => {
           const idA = parseInt(a.id) || 0;
           const idB = parseInt(b.id) || 0;
-          return idB - idA; // 큰 ID가 먼저 (최신순)
+          return idB - idA;
         });
 
         if (filteredPosts.length === 0) {
           document.getElementById('posts-list').innerHTML =
-            '<div style="padding: 40px; text-align: center; color: #666;">😅 검색 결과가 없습니다.</div>';
+            '<div class="loading">🔍 검색 결과가 없습니다</div>';
           return;
         }
 
         const postsHtml = filteredPosts
-          .map((post) => {
+          .map((post, index) => {
             const postFiles = allFiles.filter(
               (file) => file.post_id === post.id
             );
             const isNew = isPostNew(post);
 
             return `
-                    <div class="post-item ${isNew ? 'new' : ''}">
+                    <div class="post-item ${
+                      isNew ? 'new' : ''
+                    }" style="animation-delay: ${index * 0.05}s">
                         <div class="post-title">
                             ${
                               post.url
                                 ? `<a href="${post.url}" target="_blank">${post.title}</a>`
                                 : `<span>${post.title}</span>`
                             }
-                            ${
-                              isNew
-                                ? '<span style="color: #007bff; font-size: 12px; margin-left: 8px;">🆕 NEW</span>'
-                                : ''
-                            }
                         </div>
                         <div class="post-meta">
                             <span>📅 ${post.date_posted || '날짜 미상'}</span>
-                            ${
-                              post.author
-                                ? `<span>👤 ${post.author}</span>`
-                                : ''
-                            }
-                            <span>👁️ ${post.views || '0'}</span>
+                            <span>👤 ${post.author || '작성자 미상'}</span>
+                            <span>👁️ ${post.views || '0'}회</span>
                             <span>🆔 ${post.id}</span>
                         </div>
                         ${
                           postFiles.length > 0
                             ? `
                             <div class="post-files">
-                                📎 첨부파일 (${postFiles.length}개):
                                 ${postFiles
                                   .map((file) => {
                                     const icon = getFileIcon(file.file_name);
@@ -342,24 +556,26 @@
                                       file.file_name
                                     );
                                     const shortName =
-                                      file.file_name.length > 25
-                                        ? file.file_name.substring(0, 25) +
+                                      file.file_name.length > 50
+                                        ? file.file_name.substring(0, 50) +
                                           '...'
                                         : file.file_name;
 
                                     return `
-                                        <span class="file-item">
+                                        <div class="file-item">
                                             <a href="${file.file_url}" class="file-link" target="_blank"
-                                               title="[${fileType}] ${file.file_name}">
-                                                ${icon} ${shortName} <span class="file-type">[${fileType}]</span>
+                                               title="${file.file_name}">
+                                                <span>${icon}</span>
+                                                <span>${shortName}</span>
+                                                <span class="file-type">${fileType}</span>
                                             </a>
-                                        </span>
+                                        </div>
                                     `;
                                   })
                                   .join('')}
                             </div>
                         `
-                            : '<div style="color: #999; font-size: 12px; margin-top: 5px;">📎 첨부파일 없음</div>'
+                            : ''
                         }
                     </div>
                 `;
@@ -372,7 +588,6 @@
       function filterPosts(posts, filter, searchTerm) {
         let filtered = posts;
 
-        // 검색어 필터링
         if (searchTerm) {
           filtered = filtered.filter(
             (post) =>
@@ -381,7 +596,6 @@
           );
         }
 
-        // 카테고리 필터링
         switch (filter) {
           case 'new':
             filtered = filtered.filter((post) => isPostNew(post));
@@ -418,7 +632,7 @@
         document.getElementById('error').style.display = 'block';
       }
 
-      // 이벤트 리스너 설정
+      // Event listeners
       document.addEventListener('DOMContentLoaded', function () {
         document
           .getElementById('search')
@@ -435,10 +649,7 @@
           });
         });
 
-        // 페이지 로드 시 데이터 불러오기
         loadData();
-
-        // 5분마다 데이터 새로고침
         setInterval(loadData, 5 * 60 * 1000);
       });
     </script>
