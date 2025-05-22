@@ -1,0 +1,35 @@
+# .github/workflows/crawler.yml
+name: FSS Board Crawler
+
+on:
+  schedule:
+    # 4시간마다 실행 (00:00, 04:00, 08:00, 12:00, 16:00, 20:00 KST)
+    - cron: '0 */4 * * *'
+  workflow_dispatch: # 수동 실행 가능
+
+jobs:
+  crawl:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Run crawler
+        run: node main.js
+
+      - name: Commit and push if changed
+        run: |
+          git config --local user.email "hckrmoon@gmail.com"
+          git config --local user.name "codemilli"
+          git add data/
+          git diff --staged --quiet || git commit -m "Update FSS data $(date)"
+          git push

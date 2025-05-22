@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>FSS 게시판 모니터</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      body {
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+        background: #f5f5f5;
+      }
+
+      .container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 20px;
+      }
+      .header {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 25px;
+        border-radius: 12px;
+        margin-bottom: 20px;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+      }
+      .header h1 {
+        margin-bottom: 10px;
+        font-size: 24px;
+      }
+      .header .stats {
+        opacity: 0.9;
+        font-size: 14px;
+        line-height: 1.5;
+      }
+
+      .controls {
+        background: white;
+        padding: 15px;
+        border-radius: 8px;
+        margin-bottom: 20px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      }
+      .search-box {
+        width: 100%;
+        padding: 10px;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        margin-bottom: 10px;
+      }
+      .filter-buttons {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+      }
+      .filter-btn {
+        padding: 8px 16px;
+        border: 1px solid #ddd;
+        background: white;
+        border-radius: 4px;
+        cursor: pointer;
+      }
+      .filter-btn.active {
+        background: #007bff;
+        color: white;
+        border-color: #007bff;
+      }
+
+      .posts-container {
+        background: white;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        overflow: hidden;
+      }
+      .post-item {
+        border-bottom: 1px solid #eee;
+        padding: 15px;
+      }
+      .post-item:last-child {
+        border-bottom: none;
+      }
+      .post-item.new {
+        background: #f8f9ff;
+        border-left: 4px solid #007bff;
+      }
+
+      .post-title {
+        font-size: 16px;
+        font-weight: 500;
+        margin-bottom: 8px;
+      }
+      .post-title a {
+        color: #333;
+        text-decoration: none;
+      }
+      .post-title a:hover {
+        color: #007bff;
+      }
+
+      .post-meta {
+        display: flex;
+        gap: 15px;
+        font-size: 13px;
+        color: #666;
+        margin-bottom: 10px;
+      }
+      .post-files {
+        margin-top: 10px;
+      }
+      .file-item {
+        display: inline-block;
+        margin: 2px 5px 2px 0;
+      }
+      .file-link {
+        padding: 4px 8px;
+        background: #e3f2fd;
+        color: #1976d2;
+        text-decoration: none;
+        border-radius: 4px;
+        font-size: 12px;
+      }
+      .file-link:hover {
+        background: #bbdefb;
+      }
+
+      .loading {
+        text-align: center;
+        padding: 40px;
+        color: #666;
+      }
+      .error {
+        text-align: center;
+        padding: 40px;
+        color: #d32f2f;
+        background: #ffebee;
+        margin: 20px 0;
+        border-radius: 8px;
+      }
+
+      @media (max-width: 768px) {
+        .container {
+          padding: 10px;
+        }
+        .post-meta {
+          flex-direction: column;
+          gap: 5px;
+        }
+        .filter-buttons {
+          justify-content: center;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="header">
+        <h1>🏛️ FSS 게시판 모니터</h1>
+        <div class="stats">
+          <span id="total-posts">게시글 로딩 중...</span> |
+          <span id="last-update">업데이트 확인 중...</span>
+        </div>
+      </div>
+
+      <div class="controls">
+        <input
+          type="text"
+          id="search"
+          class="search-box"
+          placeholder="제목이나 내용에서 검색..."
+        />
+        <div class="filter-buttons">
+          <button class="filter-btn active" data-filter="all">전체</button>
+          <button class="filter-btn" data-filter="new">신규</button>
+          <button class="filter-btn" data-filter="files">첨부파일</button>
+          <button class="filter-btn" data-filter="today">오늘</button>
+        </div>
+      </div>
+
+      <div class="posts-container">
+        <div class="loading" id="loading">데이터를 불러오는 중...</div>
+        <div id="posts-list"></div>
+        <div class="error" id="error" style="display: none"></div>
+      </div>
+    </div>
+
+    <script>
+      let allPosts = [];
+      let allFiles = [];
+      let currentFilter = 'all';
+
+      async function loadData() {
+        try {
+          console.log('데이터 로딩 시작...');
+
+          const [postsResponse, filesResponse] = await Promise.all([
+            fetch('data/posts.json').catch(() => ({ json: () => [] })),
+            fetch('data/files.json').catch(() => ({ json: () => [] })),
+          ]);
+
+          allPosts = await postsResponse.json();
+          allFiles = await filesResponse.json();
+
+          console.log(
+            `로드된 게시글: ${allPosts.length}개, 파일: ${allFiles.length}개`
+          );
+
+          updateStats();
+          displayPosts();
+
+          document.getElementById('loading').style.display = 'none';
+        } catch (error) {
+          console.error('데이터 로드 오류:', error);
+          showError(`데이터를 불러올 수 없습니다: ${error.message}`);
+        }
+      }
+
+      function updateStats() {
+        const now = new Date();
+        const today = now.toISOString().split('T')[0];
+        const newPostsCount = allPosts.filter(
+          (post) => post.crawled_at && post.crawled_at.startsWith(today)
+        ).length;
+
+        const totalFiles = allFiles.length;
+
+        document.getElementById(
+          'total-posts'
+        ).textContent = `총 ${allPosts.length}개 게시글 (오늘 ${newPostsCount}개 신규) • 첨부파일 ${totalFiles}개`;
+
+        // 최근 크롤링 시간 계산
+        let lastCrawlTime = '처음 실행';
+        if (allPosts.length > 0) {
+          const latestPost = allPosts.reduce((latest, post) =>
+            new Date(post.crawled_at) > new Date(latest.crawled_at)
+              ? post
+              : latest
+          );
+          lastCrawlTime = new Date(latestPost.crawled_at).toLocaleString(
+            'ko-KR'
+          );
+        }
+
+        document.getElementById(
+          'last-update'
+        ).textContent = `최종 크롤링: ${lastCrawlTime}`;
+      }
+
+      function displayPosts() {
+        const searchTerm = document
+          .getElementById('search')
+          .value.toLowerCase();
+        const filteredPosts = filterPosts(allPosts, currentFilter, searchTerm);
+
+        if (filteredPosts.length === 0) {
+          document.getElementById('posts-list').innerHTML =
+            '<div style="padding: 40px; text-align: center; color: #666;">😅 검색 결과가 없습니다.</div>';
+          return;
+        }
+
+        const postsHtml = filteredPosts
+          .map((post) => {
+            const postFiles = allFiles.filter(
+              (file) => file.post_id === post.id
+            );
+            const isNew = isPostNew(post);
+
+            return `
+                    <div class="post-item ${isNew ? 'new' : ''}">
+                        <div class="post-title">
+                            ${
+                              post.url
+                                ? `<a href="${post.url}" target="_blank">${post.title}</a>`
+                                : `<span>${post.title}</span>`
+                            }
+                            ${
+                              isNew
+                                ? '<span style="color: #007bff; font-size: 12px; margin-left: 8px;">🆕 NEW</span>'
+                                : ''
+                            }
+                        </div>
+                        <div class="post-meta">
+                            <span>📅 ${post.date_posted || '날짜 미상'}</span>
+                            ${
+                              post.author
+                                ? `<span>👤 ${post.author}</span>`
+                                : ''
+                            }
+                            <span>👁️ ${post.views || '0'}</span>
+                            <span>🆔 ${post.id}</span>
+                        </div>
+                        ${
+                          postFiles.length > 0
+                            ? `
+                            <div class="post-files">
+                                📎 첨부파일 (${postFiles.length}개):
+                                ${postFiles
+                                  .map(
+                                    (file) => `
+                                    <span class="file-item">
+                                        <a href="${
+                                          file.file_url
+                                        }" class="file-link" target="_blank" title="다운로드: ${
+                                      file.file_name
+                                    }">
+                                            ${
+                                              file.file_name.length > 30
+                                                ? file.file_name.substring(
+                                                    0,
+                                                    30
+                                                  ) + '...'
+                                                : file.file_name
+                                            }
+                                        </a>
+                                    </span>
+                                `
+                                  )
+                                  .join('')}
+                            </div>
+                        `
+                            : '<div style="color: #999; font-size: 12px; margin-top: 5px;">📎 첨부파일 없음</div>'
+                        }
+                    </div>
+                `;
+          })
+          .join('');
+
+        document.getElementById('posts-list').innerHTML = postsHtml;
+      }
+
+      function filterPosts(posts, filter, searchTerm) {
+        let filtered = posts;
+
+        // 검색어 필터링
+        if (searchTerm) {
+          filtered = filtered.filter(
+            (post) =>
+              post.title.toLowerCase().includes(searchTerm) ||
+              (post.author && post.author.toLowerCase().includes(searchTerm))
+          );
+        }
+
+        // 카테고리 필터링
+        switch (filter) {
+          case 'new':
+            filtered = filtered.filter((post) => isPostNew(post));
+            break;
+          case 'files':
+            const postsWithFiles = new Set(
+              allFiles.map((file) => file.post_id)
+            );
+            filtered = filtered.filter((post) => postsWithFiles.has(post.id));
+            break;
+          case 'today':
+            const today = new Date().toISOString().split('T')[0];
+            filtered = filtered.filter(
+              (post) =>
+                post.date_posted &&
+                post.date_posted.includes(today.replace(/-/g, '.'))
+            );
+            break;
+        }
+
+        return filtered;
+      }
+
+      function isPostNew(post) {
+        if (!post.crawled_at) return false;
+        const crawledDate = new Date(post.crawled_at);
+        const oneDayAgo = new Date(Date.now() - 24 * 60 * 60 * 1000);
+        return crawledDate > oneDayAgo;
+      }
+
+      function showError(message) {
+        document.getElementById('loading').style.display = 'none';
+        document.getElementById('error').textContent = message;
+        document.getElementById('error').style.display = 'block';
+      }
+
+      // 이벤트 리스너 설정
+      document.getElementById('search').addEventListener('input', displayPosts);
+
+      document.querySelectorAll('.filter-btn').forEach((btn) => {
+        btn.addEventListener('click', (e) => {
+          document
+            .querySelectorAll('.filter-btn')
+            .forEach((b) => b.classList.remove('active'));
+          e.target.classList.add('active');
+          currentFilter = e.target.dataset.filter;
+          displayPosts();
+        });
+      });
+
+      // 페이지 로드 시 데이터 불러오기
+      loadData();
+
+      // 5분마다 데이터 새로고침
+      setInterval(loadData, 5 * 60 * 1000);
+    </script>
+  </body>
+</html>

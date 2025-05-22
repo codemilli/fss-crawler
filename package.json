@@ -1,0 +1,17 @@
+{
+  "name": "fss-crawler",
+  "version": "1.0.0",
+  "description": "FSS Board Crawler",
+  "main": "main.js",
+  "scripts": {
+    "start": "node main.js",
+    "test": "node test.js"
+  },
+  "dependencies": {
+    "axios": "^1.6.0",
+    "cheerio": "^1.0.0-rc.12"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}
